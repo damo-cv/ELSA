@@ -7,15 +7,19 @@ This repo is the official implementation of ["ELSA: Enhanced Local Self-Attentio
 
 ## Introduction
 
-![Figure 1](http://thefoxofsky.github.io/images/local_comp.png)
+<div align="center">
+<img src=http://thefoxofsky.github.io/images/local_comp.png width=60%/>
+</div>
 
 Self-attention is powerful in modeling long-range dependencies, but it is weak in local finer-level feature learning. 
-The performance of local self-attention (LSA) is just on par with convolution and inferior to 
+As shown in Figure 1, the performance of local self-attention (LSA) is just on par with convolution and inferior to 
 dynamic filters, which puzzles researchers on whether to use LSA or its counterparts, which one is better, and what 
 makes LSA mediocre. In this work, we comprehensively investigate LSA and its counterparts. We find that the devil lies 
 in the generation and application of spatial attention. 
 
-![Figure 2](http://thefoxofsky.github.io/images/elsa.png)
+<div align="center">
+<img src=http://thefoxofsky.github.io/images/elsa.png width=50%/>
+</div>
 
 Based on these findings, we propose the enhanced local self-attention (ELSA) with Hadamard attention and the ghost head, 
 as illustrated in Figure 2. Experiments demonstrate the effectiveness of ELSA. Without architecture / hyperparameter 
@@ -28,9 +32,8 @@ Please refer to our [paper](https://arxiv.org/abs/2112.12786) for more details.
 
 ## Model zoo
 
-We have reproduced the performance to verify the reproducibility. The reproduced results may have a gap of about 0.1~0.2% with the numbers in the paper.
-
 ### ImageNet Classification
+
 | Model       | #Params |   Pretrain  | Resolution | Top1 Acc | Download | 
 | :---        |  :---:  |    :---:    |    :---:   |   :---:  |  :---:   |
 | ELSA-Swin-T | 28M     | ImageNet 1K |     224    | 82.7     | [baidu](https://pan.baidu.com/s/16lPWTybCeoHT4BMDaKDTYw?pwd=cw25) |
@@ -60,7 +63,6 @@ We have reproduced the performance to verify the reproducibility. The reproduced
 ## Install
 
 - Clone this repo:
-
 ```bash
 git clone https://github.com/damo-cv/ELSA.git elsa
 cd elsa
@@ -73,7 +75,6 @@ conda activate elsa
 ```
 
 - Install `PyTorch==1.8.0` and `torchvision==0.9.0` with `CUDA==10.1`:
-
 ```bash
 conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.1 -c pytorch
 ```
@@ -82,7 +83,6 @@ conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.1 -c pytorch
   the [official installation instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
 
 - Install `Apex`:
-
 ```bash
 git clone https://github.com/NVIDIA/apex
 cd apex
@@ -91,19 +91,16 @@ cd ../
 ```
 
 - Install `mmcv-full==1.3.0`
-
 ```bash
 pip install mmcv-full==1.3.0 -f https://download.openmmlab.com/mmcv/dist/cu101/torch1.8.0/index.html
 ```
 
 - Install other requirements:
-
 ```bash
 pip install -r requirements.txt
 ```
 
 - Install mmdet and mmseg:
-
 ```bash
 cd ./det
 pip install -v -e .
@@ -113,7 +110,6 @@ cd ../
 ```
 
 - Build the elsa operation:
-
 ```bash
 cd ./cls/models/elsa
 python setup.py install
@@ -152,15 +148,16 @@ We use standard ImageNet dataset, you can download it from http://image-net.org/
 
 Also, please prepare the [COCO](https://github.com/open-mmlab/mmdetection/blob/master/docs/en/1_exist_data_model.md) 
 and [ADE20K](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#prepare-datasets) datasets following their links. 
-Please link them to `det/data` and `seg/data`.
+Then, please link them to `det/data` and `seg/data`.
 
 ## Evaluation
 
 ### ImageNet Classification
-Run following scripts to evaluate pre-trained models on the ImageNet-1K:
 
+Run following scripts to evaluate pre-trained models on the ImageNet-1K:
 ```bash
 cd cls
+
 python validate.py <PATH_TO_IMAGENET> --model elsa_swin_tiny --checkpoint <CHECKPOINT_FILE> \
   --no-test-pool --apex-amp --img-size 224 -b 128
 
@@ -172,10 +169,11 @@ python validate.py <PATH_TO_IMAGENET> --model elsa_swin_base --checkpoint <CHECK
 ```
 
 ### COCO Detection
-Run following scripts to evaluate a detector on the COCO:
 
+Run following scripts to evaluate a detector on the COCO:
 ```bash
 cd det
+
 # single-gpu testing
 python tools/test.py <CONFIG_FILE> <DET_CHECKPOINT_FILE> --eval bbox segm
 
@@ -184,10 +182,11 @@ tools/dist_test.sh <CONFIG_FILE> <DET_CHECKPOINT_FILE> <GPU_NUM> --eval bbox seg
 ```
 
 ### ADE20K Semantic Segmentation
-Run following scripts to evaluate a model on the ADE20K:
 
+Run following scripts to evaluate a model on the ADE20K:
 ```bash
 cd seg
+
 # single-gpu testing
 python tools/test.py <CONFIG_FILE> <SEG_CHECKPOINT_FILE> --aug-test --eval mIoU
 
@@ -200,8 +199,8 @@ tools/dist_test.sh <CONFIG_FILE> <SEG_CHECKPOINT_FILE> <GPU_NUM> --aug-test --ev
 Due to randomness, the re-training results may have a gap of about 0.1~0.2% with the numbers in the paper.
 
 ### ImageNet Classification
-Run following scripts to train classifiers on the ImageNet-1K:
 
+Run following scripts to train classifiers on the ImageNet-1K:
 ```bash
 cd cls
 
@@ -224,8 +223,8 @@ bash ./distributed_train.sh 8 <PATH_TO_IMAGENET> --model elsa_swin_base \
 If GPU memory is not enough when training elsa_swin_base, you can use two nodes (2 * 8 GPUs), each with a batch size of 64 images/GPU.
 
 ### COCO Detection / ADE20K Semantic Segmentation
-Run following scripts to train models on the COCO / ADE20K:
 
+Run following scripts to train models on the COCO / ADE20K:
 ```bash
 cd det 
 # (or cd seg)
@@ -242,6 +241,7 @@ Science Foundation of China (No.61976094).
 
 Codebase from [pytorch-image-models](https://github.com/rwightman/pytorch-image-models),
               [ddfnet](https://github.com/theFoxofSky/ddfnet),
+              [VOLO](https://github.com/sail-sg/volo),
               [Swin-Transformer](https://github.com/microsoft/Swin-Transformer),
               [Swin-Transformer-Detection](https://github.com/SwinTransformer/Swin-Transformer-Object-Detection),
           and [Swin-Transformer-Semantic-Segmentation](https://github.com/SwinTransformer/Swin-Transformer-Semantic-Segmentation)
