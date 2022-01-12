@@ -39,7 +39,7 @@ We have reproduced the performance to verify the reproducibility. The reproduced
 
 ### COCO Object Detection
 
-| Backbone | Method | pretrain | Lr Schd | box mAP | mask mAP | #params | Download |
+| Backbone | Method | Pretrain | Lr Schd | Box mAP | Mask mAP | #Params | Download |
 | :---:  | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | ELSA-Swin-T | Mask R-CNN | ImageNet-1K | 1x | 45.7 | 41.1 | 49M | [baidu](https://pan.baidu.com/s/1JlrYUs2SOPFrPRTNbsh44A?pwd=1z3c) |
 | ELSA-Swin-T | Mask R-CNN | ImageNet-1K | 3x | 47.5 | 42.7 | 49M | [baidu](https://pan.baidu.com/s/1IW-oonGGK8bDMdPqxNSt6g?pwd=7fzj) |
@@ -52,9 +52,9 @@ We have reproduced the performance to verify the reproducibility. The reproduced
 
 ### ADE20K Semantic Segmentation
 
-| Backbone | Method  | pretrain    | Crop Size | Lr Schd | MS mIoU | #params | Download    |
+| Backbone | Method  | Pretrain    | Crop Size | Lr Schd | mIoU (ms+flip) | #Params | Download    |
 | :---:    | :---:   | :---:       | :---:     | :---:   | :---:   | :---:   | :---:       |
-| ELSA-Swin-T | UPerNet | ImageNet-1K | 512x512 | 160K | 47.7 | 61M | coming soon |
+| ELSA-Swin-T | UPerNet | ImageNet-1K | 512x512 | 160K | 47.9 | 61M | [baidu](https://pan.baidu.com/s/13tAJq5Fw23Uzd-Sa-7wJTg?pwd=erxh) |
 | ELSA-Swin-S | UperNet | ImageNet-1K | 512x512 | 160K | 50.3 | 85M | coming soon |
 
 ## Install
@@ -234,7 +234,6 @@ cd det
 tools/dist_train.sh <CONFIG_FILE> <GPU_NUM> --cfg-options model.pretrained=<PRETRAIN_MODEL> [model.backbone.use_checkpoint=True] [other optional arguments] 
 ```
 
-WARNING!! The reproducibility of semantic segmentation has not been checked, but will be checked soon.
 
 ## Acknowledgement
 
