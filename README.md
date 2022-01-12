@@ -12,7 +12,7 @@ This repo is the official implementation of ["ELSA: Enhanced Local Self-Attentio
 </div>
 
 Self-attention is powerful in modeling long-range dependencies, but it is weak in local finer-level feature learning. 
-The performance of local self-attention (LSA) is just on par with convolution and inferior to 
+As shown in Figure 1, the performance of local self-attention (LSA) is just on par with convolution and inferior to 
 dynamic filters, which puzzles researchers on whether to use LSA or its counterparts, which one is better, and what 
 makes LSA mediocre. In this work, we comprehensively investigate LSA and its counterparts. We find that the devil lies 
 in the generation and application of spatial attention. 
