@@ -242,6 +242,7 @@ Science Foundation of China (No.61976094).
 
 Codebase from [pytorch-image-models](https://github.com/rwightman/pytorch-image-models),
               [ddfnet](https://github.com/theFoxofSky/ddfnet),
+              [VOLO](https://github.com/sail-sg/volo),
               [Swin-Transformer](https://github.com/microsoft/Swin-Transformer),
               [Swin-Transformer-Detection](https://github.com/SwinTransformer/Swin-Transformer-Object-Detection),
           and [Swin-Transformer-Semantic-Segmentation](https://github.com/SwinTransformer/Swin-Transformer-Semantic-Segmentation)
