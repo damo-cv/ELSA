@@ -7,7 +7,9 @@ This repo is the official implementation of ["ELSA: Enhanced Local Self-Attentio
 
 ## Introduction
 
-![Figure 1](http://thefoxofsky.github.io/images/local_comp.png)
+<div align="center">
+<img src=http://thefoxofsky.github.io/images/local_comp.png width=60%/>
+</div>
 
 Self-attention is powerful in modeling long-range dependencies, but it is weak in local finer-level feature learning. 
 The performance of local self-attention (LSA) is just on par with convolution and inferior to 
@@ -15,7 +17,9 @@ dynamic filters, which puzzles researchers on whether to use LSA or its counterp
 makes LSA mediocre. In this work, we comprehensively investigate LSA and its counterparts. We find that the devil lies 
 in the generation and application of spatial attention. 
 
-![Figure 2](http://thefoxofsky.github.io/images/elsa.png)
+<div align="center">
+<img src=http://thefoxofsky.github.io/images/elsa.png width=50%/>
+</div>
 
 Based on these findings, we propose the enhanced local self-attention (ELSA) with Hadamard attention and the ghost head, 
 as illustrated in Figure 2. Experiments demonstrate the effectiveness of ELSA. Without architecture / hyperparameter 
