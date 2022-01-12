@@ -32,9 +32,8 @@ Please refer to our [paper](https://arxiv.org/abs/2112.12786) for more details.
 
 ## Model zoo
 
-We have reproduced the performance to verify the reproducibility. The reproduced results may have a gap of about 0.1~0.2% with the numbers in the paper.
-
 ### ImageNet Classification
+
 | Model       | #Params |   Pretrain  | Resolution | Top1 Acc | Download | 
 | :---        |  :---:  |    :---:    |    :---:   |   :---:  |  :---:   |
 | ELSA-Swin-T | 28M     | ImageNet 1K |     224    | 82.7     | [baidu](https://pan.baidu.com/s/16lPWTybCeoHT4BMDaKDTYw?pwd=cw25) |
@@ -64,7 +63,6 @@ We have reproduced the performance to verify the reproducibility. The reproduced
 ## Install
 
 - Clone this repo:
-
 ```bash
 git clone https://github.com/damo-cv/ELSA.git elsa
 cd elsa
@@ -77,7 +75,6 @@ conda activate elsa
 ```
 
 - Install `PyTorch==1.8.0` and `torchvision==0.9.0` with `CUDA==10.1`:
-
 ```bash
 conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.1 -c pytorch
 ```
@@ -86,7 +83,6 @@ conda install pytorch==1.8.0 torchvision==0.9.0 cudatoolkit=10.1 -c pytorch
   the [official installation instructions](https://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html)
 
 - Install `Apex`:
-
 ```bash
 git clone https://github.com/NVIDIA/apex
 cd apex
@@ -95,19 +91,16 @@ cd ../
 ```
 
 - Install `mmcv-full==1.3.0`
-
 ```bash
 pip install mmcv-full==1.3.0 -f https://download.openmmlab.com/mmcv/dist/cu101/torch1.8.0/index.html
 ```
 
 - Install other requirements:
-
 ```bash
 pip install -r requirements.txt
 ```
 
 - Install mmdet and mmseg:
-
 ```bash
 cd ./det
 pip install -v -e .
@@ -117,7 +110,6 @@ cd ../
 ```
 
 - Build the elsa operation:
-
 ```bash
 cd ./cls/models/elsa
 python setup.py install
@@ -161,10 +153,11 @@ Please link them to `det/data` and `seg/data`.
 ## Evaluation
 
 ### ImageNet Classification
-Run following scripts to evaluate pre-trained models on the ImageNet-1K:
 
+Run following scripts to evaluate pre-trained models on the ImageNet-1K:
 ```bash
 cd cls
+
 python validate.py <PATH_TO_IMAGENET> --model elsa_swin_tiny --checkpoint <CHECKPOINT_FILE> \
   --no-test-pool --apex-amp --img-size 224 -b 128
 
@@ -176,10 +169,11 @@ python validate.py <PATH_TO_IMAGENET> --model elsa_swin_base --checkpoint <CHECK
 ```
 
 ### COCO Detection
-Run following scripts to evaluate a detector on the COCO:
 
+Run following scripts to evaluate a detector on the COCO:
 ```bash
 cd det
+
 # single-gpu testing
 python tools/test.py <CONFIG_FILE> <DET_CHECKPOINT_FILE> --eval bbox segm
 
@@ -188,10 +182,11 @@ tools/dist_test.sh <CONFIG_FILE> <DET_CHECKPOINT_FILE> <GPU_NUM> --eval bbox seg
 ```
 
 ### ADE20K Semantic Segmentation
-Run following scripts to evaluate a model on the ADE20K:
 
+Run following scripts to evaluate a model on the ADE20K:
 ```bash
 cd seg
+
 # single-gpu testing
 python tools/test.py <CONFIG_FILE> <SEG_CHECKPOINT_FILE> --aug-test --eval mIoU
 
@@ -204,8 +199,8 @@ tools/dist_test.sh <CONFIG_FILE> <SEG_CHECKPOINT_FILE> <GPU_NUM> --aug-test --ev
 Due to randomness, the re-training results may have a gap of about 0.1~0.2% with the numbers in the paper.
 
 ### ImageNet Classification
-Run following scripts to train classifiers on the ImageNet-1K:
 
+Run following scripts to train classifiers on the ImageNet-1K:
 ```bash
 cd cls
 
@@ -228,8 +223,8 @@ bash ./distributed_train.sh 8 <PATH_TO_IMAGENET> --model elsa_swin_base \
 If GPU memory is not enough when training elsa_swin_base, you can use two nodes (2 * 8 GPUs), each with a batch size of 64 images/GPU.
 
 ### COCO Detection / ADE20K Semantic Segmentation
-Run following scripts to train models on the COCO / ADE20K:
 
+Run following scripts to train models on the COCO / ADE20K:
 ```bash
 cd det 
 # (or cd seg)
