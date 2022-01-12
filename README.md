@@ -36,28 +36,28 @@ Please refer to our [paper](https://arxiv.org/abs/2112.12786) for more details.
 
 | Model       | #Params |   Pretrain  | Resolution | Top1 Acc | Download | 
 | :---        |  :---:  |    :---:    |    :---:   |   :---:  |  :---:   |
-| ELSA-Swin-T | 28M     | ImageNet 1K |     224    | 82.7     | [baidu](https://pan.baidu.com/s/16lPWTybCeoHT4BMDaKDTYw?pwd=cw25) |
-| ELSA-Swin-S | 53M     | ImageNet 1K |     224    | 83.5     | [baidu](https://pan.baidu.com/s/1qTyCm7vLXqd9KEMyIsKLrQ?pwd=e6b2) |
-| ELSA-Swin-B | 93M     | ImageNet 1K |     224    | 84.0     | [baidu](https://pan.baidu.com/s/11V_IdRXXPo4IaqghUdLNCQ?pwd=3r11) |
+| ELSA-Swin-T | 28M     | ImageNet 1K |     224    | 82.7     | [google](https://drive.google.com/file/d/1eM0FsRNEDX-NncIEfvl4yXOAJawy2Ls0/view?usp=sharing) / [baidu](https://pan.baidu.com/s/16lPWTybCeoHT4BMDaKDTYw?pwd=cw25) |
+| ELSA-Swin-S | 53M     | ImageNet 1K |     224    | 83.5     | [google](https://drive.google.com/file/d/186PDbqrt2hEg8r5aH45D5D6bO-EWJgcO/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1qTyCm7vLXqd9KEMyIsKLrQ?pwd=e6b2) |
+| ELSA-Swin-B | 93M     | ImageNet 1K |     224    | 84.0     | [google](https://drive.google.com/file/d/1J42asBqLb6iiKaYQaeoS2UpT7kUSjBr9/view?usp=sharing) / [baidu](https://pan.baidu.com/s/11V_IdRXXPo4IaqghUdLNCQ?pwd=3r11) |
 
 ### COCO Object Detection
 
 | Backbone | Method | Pretrain | Lr Schd | Box mAP | Mask mAP | #Params | Download |
 | :---:  | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| ELSA-Swin-T | Mask R-CNN | ImageNet-1K | 1x | 45.7 | 41.1 | 49M | [baidu](https://pan.baidu.com/s/1JlrYUs2SOPFrPRTNbsh44A?pwd=1z3c) |
-| ELSA-Swin-T | Mask R-CNN | ImageNet-1K | 3x | 47.5 | 42.7 | 49M | [baidu](https://pan.baidu.com/s/1IW-oonGGK8bDMdPqxNSt6g?pwd=7fzj) |
-| ELSA-Swin-S | Mask R-CNN | ImageNet-1K | 1x | 48.3 | 43.0 | 72M | [baidu](https://pan.baidu.com/s/1YFgpzvTK6MxkmqUdqt_HOQ?pwd=baiv) |
-| ELSA-Swin-S | Mask R-CNN | ImageNet-1K | 3x | 49.2 | 43.6 | 72M | [baidu](https://pan.baidu.com/s/1QxcXlbz48jFIoMgfdlXMtw?pwd=9qc6) |
-| ELSA-Swin-T | Cascade Mask R-CNN | ImageNet-1K | 1x | 49.8 | 43.0 | 86M | [baidu](https://pan.baidu.com/s/1C9pAXA2EUgv5twaaC_fQ6g?pwd=p85s) |
-| ELSA-Swin-T | Cascade Mask R-CNN | ImageNet-1K | 3x | 51.0 | 44.2 | 86M | [baidu](https://pan.baidu.com/s/1oQWh-jGB75NOUaHBMqJTWQ?pwd=8v7r) |
-| ELSA-Swin-S | Cascade Mask R-CNN | ImageNet-1K | 1x | 51.6 | 44.4 | 110M | [baidu](https://pan.baidu.com/s/18Wn79JvQnwiHfvD8_nELUg?pwd=qc8i) |
-| ELSA-Swin-S | Cascade Mask R-CNN | ImageNet-1K | 3x | 52.3 | 45.2 | 110M | [baidu](https://pan.baidu.com/s/1I5wEDJz8sBdhukSXUEPOYQ?pwd=kxd1) |
+| ELSA-Swin-T | Mask R-CNN | ImageNet-1K | 1x | 45.7 | 41.1 | 49M | [google](https://drive.google.com/file/d/15wvHHwktc9Bzqro8SSrTTjKN_cWy8pLc/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1JlrYUs2SOPFrPRTNbsh44A?pwd=1z3c) |
+| ELSA-Swin-T | Mask R-CNN | ImageNet-1K | 3x | 47.5 | 42.7 | 49M | [google](https://drive.google.com/file/d/1EOr-lLVTrci2A4qsD2P3wp-IVs27VVLm/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1IW-oonGGK8bDMdPqxNSt6g?pwd=7fzj) |
+| ELSA-Swin-S | Mask R-CNN | ImageNet-1K | 1x | 48.3 | 43.0 | 72M | [google](https://drive.google.com/file/d/1pk185BpCGIDrUc1sAezjrA-wuWr_lYII/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1YFgpzvTK6MxkmqUdqt_HOQ?pwd=baiv) |
+| ELSA-Swin-S | Mask R-CNN | ImageNet-1K | 3x | 49.2 | 43.6 | 72M | [google](https://drive.google.com/file/d/1akDKhHmh3_1PfB1Dds9YrpODPsx58-cc/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1QxcXlbz48jFIoMgfdlXMtw?pwd=9qc6) |
+| ELSA-Swin-T | Cascade Mask R-CNN | ImageNet-1K | 1x | 49.8 | 43.0 | 86M | [google](https://drive.google.com/file/d/1wjw3lRqe1T_ph824RSb8Hk_yZ49d3CNI/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1C9pAXA2EUgv5twaaC_fQ6g?pwd=p85s) |
+| ELSA-Swin-T | Cascade Mask R-CNN | ImageNet-1K | 3x | 51.0 | 44.2 | 86M | [google](https://drive.google.com/file/d/1B7sUVuGXZAzgZd0ud0MBsSlDbM8DkvC-/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1oQWh-jGB75NOUaHBMqJTWQ?pwd=8v7r) |
+| ELSA-Swin-S | Cascade Mask R-CNN | ImageNet-1K | 1x | 51.6 | 44.4 | 110M | [google](https://drive.google.com/file/d/1WI4za90sXu4wv5rx_dTRm2X7xe30anil/view?usp=sharing) / [baidu](https://pan.baidu.com/s/18Wn79JvQnwiHfvD8_nELUg?pwd=qc8i) |
+| ELSA-Swin-S | Cascade Mask R-CNN | ImageNet-1K | 3x | 52.3 | 45.2 | 110M | [google](https://drive.google.com/file/d/1mkhdwjyScpiBbobWc4TibtoYX4OLk9pp/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1I5wEDJz8sBdhukSXUEPOYQ?pwd=kxd1) |
 
 ### ADE20K Semantic Segmentation
 
 | Backbone | Method  | Pretrain    | Crop Size | Lr Schd | mIoU (ms+flip) | #Params | Download    |
 | :---:    | :---:   | :---:       | :---:     | :---:   | :---:   | :---:   | :---:       |
-| ELSA-Swin-T | UPerNet | ImageNet-1K | 512x512 | 160K | 47.9 | 61M | [baidu](https://pan.baidu.com/s/13tAJq5Fw23Uzd-Sa-7wJTg?pwd=erxh) |
+| ELSA-Swin-T | UPerNet | ImageNet-1K | 512x512 | 160K | 47.9 | 61M | [google](https://drive.google.com/file/d/1SjHyXNv-ODGsDxcDbvDPNHUQUoMq8FWR/view?usp=sharing) / [baidu](https://pan.baidu.com/s/13tAJq5Fw23Uzd-Sa-7wJTg?pwd=erxh) |
 | ELSA-Swin-S | UperNet | ImageNet-1K | 512x512 | 160K | 50.3 | 85M | coming soon |
 
 ## Install
