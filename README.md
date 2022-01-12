@@ -148,7 +148,7 @@ We use standard ImageNet dataset, you can download it from http://image-net.org/
 
 Also, please prepare the [COCO](https://github.com/open-mmlab/mmdetection/blob/master/docs/en/1_exist_data_model.md) 
 and [ADE20K](https://github.com/open-mmlab/mmsegmentation/blob/master/docs/en/dataset_prepare.md#prepare-datasets) datasets following their links. 
-Please link them to `det/data` and `seg/data`.
+Then, please link them to `det/data` and `seg/data`.
 
 ## Evaluation
 
