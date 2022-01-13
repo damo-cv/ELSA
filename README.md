@@ -58,7 +58,7 @@ Please refer to our [paper](https://arxiv.org/abs/2112.12786) for more details.
 | Backbone | Method  | Pretrain    | Crop Size | Lr Schd | mIoU (ms+flip) | #Params | Download    |
 | :---:    | :---:   | :---:       | :---:     | :---:   | :---:   | :---:   | :---:       |
 | ELSA-Swin-T | UPerNet | ImageNet-1K | 512x512 | 160K | 47.9 | 61M | [google](https://drive.google.com/file/d/1SjHyXNv-ODGsDxcDbvDPNHUQUoMq8FWR/view?usp=sharing) / [baidu](https://pan.baidu.com/s/13tAJq5Fw23Uzd-Sa-7wJTg?pwd=erxh) |
-| ELSA-Swin-S | UperNet | ImageNet-1K | 512x512 | 160K | 50.3 | 85M | coming soon |
+| ELSA-Swin-S | UperNet | ImageNet-1K | 512x512 | 160K | 50.4 | 85M | [google](https://drive.google.com/file/d/1RIaq45wBW0wnJlCK9cf-PDKGV41ECQ86/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1L4QEYoRc1_Veu4L-_jYVLQ?pwd=p84r) |
 
 ## Install
 
