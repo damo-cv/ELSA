@@ -118,13 +118,13 @@ class ELSAFunctionCUDA(Function):
         return grad_input, grad_channel_mul, grad_channel_add, grad_spatial_filter, None, None, None, None
 
 
-elsa_funcgion_cuda = ELSAFunctionCUDA.apply
+elsa_function_cuda = ELSAFunctionCUDA.apply
 
 
 def elsa_op(features, channel_mul, channel_add, spatial_filter,
             kernel_size=3, dilation=1, stride=1, version=''):
     if features.is_cuda and channel_mul.is_cuda and channel_add.is_cuda and spatial_filter.is_cuda:
-        return elsa_funcgion_cuda(features, channel_mul, channel_add, spatial_filter,
+        return elsa_function_cuda(features, channel_mul, channel_add, spatial_filter,
                                   kernel_size, dilation, stride, version)
     else:
         B, C, H, W = features.shape
