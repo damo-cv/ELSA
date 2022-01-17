@@ -1,7 +1,7 @@
 # ELSA: Enhanced Local Self-Attention for Vision Transformer
 
 By [Jingkai Zhou](http://thefoxofsky.github.io/), [Pichao Wang](https://wangpichao.github.io/)\*, 
-  Fan Wang, [Qiong Liu](https://www2.scut.edu.cn/sse/2018/0615/c16788a270756/page.htm), Hao Li, [Rong Jin](http://www.cse.msu.edu/~rongjin/)
+  Fan Wang, [Qiong Liu](https://www2.scut.edu.cn/sse/2018/0615/c16788a270756/page.htm)\*, Hao Li, [Rong Jin](http://www.cse.msu.edu/~rongjin/)
 
 This repo is the official implementation of ["ELSA: Enhanced Local Self-Attention for Vision Transformer"](https://arxiv.org/abs/2112.12786).
 
