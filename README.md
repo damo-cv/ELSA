@@ -32,8 +32,6 @@ Please refer to our [paper](https://arxiv.org/abs/2112.12786) for more details.
 
 ## Model zoo
 
-We have reproduced the performance to verify the reproducibility. The reproduced results may have a gap of about 0.1~0.2% with the numbers in the paper.
-
 ### ImageNet Classification
 
 | Model       | #Params |   Pretrain  | Resolution | Top1 Acc | Download | 
