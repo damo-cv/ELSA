@@ -14,36 +14,36 @@ from . import elsa_ext, elsa_faster_ext
 
 class ELSAFunctionCUDA(Function):
     @staticmethod
-    def forward(ctx, features, channel_mul, channel_add, spatial_filter,
-                kernel_size=3, dilation=1, stride=1, version=''):
+    def forward(ctx, features, ghost_mul, ghost_add, spatial_filter,
+                kernel_size=5, dilation=1, stride=1, version=''):
         # check args
         assert features.is_cuda, 'input feature must be a CUDA tensor.'
-        assert channel_mul.is_cuda, 'channel_mul must be a CUDA tensor.'
-        assert channel_add.is_cuda, 'channel_add must be a CUDA tensor.'
+        assert ghost_mul.is_cuda, 'ghost_mul must be a CUDA tensor.'
+        assert ghost_add.is_cuda, 'ghost_add must be a CUDA tensor.'
         assert spatial_filter.is_cuda, 'spatial_filter must be a CUDA tensor.'
 
         # TODO: fix CUDA code to support HALF operation
         if features.dtype == torch.float16:
             features = features.float()
-        if channel_mul.dtype == torch.float16:
-            channel_mul = channel_mul.float()
-        if channel_add.dtype == torch.float16:
-            channel_add = channel_add.float()
+        if ghost_mul.dtype == torch.float16:
+            ghost_mul = ghost_mul.float()
+        if ghost_add.dtype == torch.float16:
+            ghost_add = ghost_add.float()
         if spatial_filter.dtype == torch.float16:
             spatial_filter = spatial_filter.float()
 
         # check channel_filter size
         b, c, h, w = features.size()
-        bc, cc, hc, wc = channel_mul.size()
-        assert channel_mul.size() == channel_add.size(),\
-            "channel_mul size {} does not match channel_add size {}".format(
-                channel_mul.size(), channel_add.size())
+        bc, cc, hc, wc = ghost_mul.size()
+        assert ghost_mul.size() == ghost_add.size(),\
+            "ghost_mul size {} does not match ghost_add size {}".format(
+                ghost_mul.size(), ghost_add.size())
         assert bc == b and cc == c,\
-            "channel_mul size {} does not match feature size {}".format(
-                channel_mul.size(), features.size())
+            "ghost_mul size {} does not match feature size {}".format(
+                ghost_mul.size(), features.size())
         assert hc == kernel_size and wc == kernel_size,\
-            "channel_mul size {} does not match kernel size {}".format(
-                channel_mul.size(), kernel_size)
+            "ghost_mul size {} does not match kernel size {}".format(
+                ghost_mul.size(), kernel_size)
 
         # check spatial_filter size
         bs, cs, hs, ws, = spatial_filter.size()
@@ -57,8 +57,8 @@ class ELSAFunctionCUDA(Function):
         assert (kernel_size - 1) % 2 == 0 and kernel_size >= 1 and dilation >= 1 and stride >= 1
 
         features = features.contiguous()
-        channel_mul = channel_mul.contiguous()
-        channel_add = channel_add.contiguous()
+        ghost_mul = ghost_mul.contiguous()
+        ghost_add = ghost_add.contiguous()
         spatial_filter = spatial_filter.contiguous()
 
         # record important info
@@ -79,11 +79,11 @@ class ELSAFunctionCUDA(Function):
         else:
             op_type = elsa_ext
 
-        op_type.forward(features, channel_mul, channel_add, spatial_filter,
+        op_type.forward(features, ghost_mul, ghost_add, spatial_filter,
                         kernel_size, dilation, stride, output)
-        if features.requires_grad or channel_mul.requires_grad \
-                or channel_add.requires_grad or spatial_filter.requires_grad:
-            ctx.save_for_backward(features, channel_mul, channel_add, spatial_filter)
+        if features.requires_grad or ghost_mul.requires_grad \
+                or ghost_add.requires_grad or spatial_filter.requires_grad:
+            ctx.save_for_backward(features, ghost_mul, ghost_add, spatial_filter)
         return output
 
     @staticmethod
@@ -100,31 +100,31 @@ class ELSAFunctionCUDA(Function):
         dilation = ctx.dilation
         stride = ctx.stride
 
-        features, channel_mul, channel_add, spatial_filter = ctx.saved_tensors
+        features, ghost_mul, ghost_add, spatial_filter = ctx.saved_tensors
         rgrad_output = torch.zeros_like(grad_output, requires_grad=False)
         rgrad_input = torch.zeros_like(features, requires_grad=False)
         rgrad_spatial_filter = torch.zeros_like(spatial_filter, requires_grad=False)
         grad_input = torch.zeros_like(features, requires_grad=False)
-        grad_channel_mul = torch.zeros_like(channel_mul, requires_grad=False)
-        grad_channel_add = torch.zeros_like(channel_add, requires_grad=False)
+        grad_ghost_mul = torch.zeros_like(ghost_mul, requires_grad=False)
+        grad_ghost_add = torch.zeros_like(ghost_add, requires_grad=False)
         grad_spatial_filter = torch.zeros_like(spatial_filter, requires_grad=False)
 
         # TODO: optimize backward CUDA code.
-        elsa_ext.backward(grad_output, features, channel_mul, channel_add,
+        elsa_ext.backward(grad_output, features, ghost_mul, ghost_add,
                           spatial_filter, kernel_size, dilation, stride,
                           rgrad_output, rgrad_input, rgrad_spatial_filter,
-                          grad_input, grad_channel_mul, grad_channel_add, grad_spatial_filter)
+                          grad_input, grad_ghost_mul, grad_ghost_add, grad_spatial_filter)
 
-        return grad_input, grad_channel_mul, grad_channel_add, grad_spatial_filter, None, None, None, None
+        return grad_input, grad_ghost_mul, grad_ghost_add, grad_spatial_filter, None, None, None, None
 
 
 elsa_function_cuda = ELSAFunctionCUDA.apply
 
 
-def elsa_op(features, channel_mul, channel_add, spatial_filter,
-            kernel_size=3, dilation=1, stride=1, version=''):
-    if features.is_cuda and channel_mul.is_cuda and channel_add.is_cuda and spatial_filter.is_cuda:
-        return elsa_function_cuda(features, channel_mul, channel_add, spatial_filter,
+def elsa_op(features, ghost_mul, ghost_add, spatial_filter,
+            kernel_size=5, dilation=1, stride=1, version=''):
+    if features.is_cuda and ghost_mul.is_cuda and ghost_add.is_cuda and spatial_filter.is_cuda:
+        return elsa_function_cuda(features, ghost_mul, ghost_add, spatial_filter,
                                   kernel_size, dilation, stride, version)
     else:
         B, C, H, W = features.shape
@@ -132,10 +132,10 @@ def elsa_op(features, channel_mul, channel_add, spatial_filter,
         features = Function.unfold(
             features, kernel_size=kernel_size, dilation=dilation, padding=_pad, stride=stride) \
             .reshape(B, C, kernel_size ** 2, H * W)
-        channel_mul = channel_mul.reshape(B, C, kernel_size ** 2, 1)
-        channel_add = channel_add.reshape(B, C, kernel_size ** 2, 1)
+        ghost_mul = ghost_mul.reshape(B, C, kernel_size ** 2, 1)
+        ghost_add = ghost_add.reshape(B, C, kernel_size ** 2, 1)
         spatial_filter = spatial_filter.reshape(B, 1, kernel_size ** 2, H * W)
-        filters = channel_mul * spatial_filter + channel_add  # B, C, K, N
+        filters = ghost_mul * spatial_filter + ghost_add  # B, C, K, N
         return (features * filters).sum(2).reshape(B, C, H, W)
 
 
