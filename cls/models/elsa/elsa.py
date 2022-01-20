@@ -14,13 +14,13 @@ from . import elsa_ext, elsa_faster_ext
 
 class ELSAFunctionCUDA(Function):
     @staticmethod
-    def forward(ctx, features, ghost_mul, ghost_add, spatial_filter,
+    def forward(ctx, features, ghost_mul, ghost_add, h_attn,
                 kernel_size=5, dilation=1, stride=1, version=''):
         # check args
         assert features.is_cuda, 'input feature must be a CUDA tensor.'
         assert ghost_mul.is_cuda, 'ghost_mul must be a CUDA tensor.'
         assert ghost_add.is_cuda, 'ghost_add must be a CUDA tensor.'
-        assert spatial_filter.is_cuda, 'spatial_filter must be a CUDA tensor.'
+        assert h_attn.is_cuda, 'h_attn must be a CUDA tensor.'
 
         # TODO: fix CUDA code to support HALF operation
         if features.dtype == torch.float16:
@@ -29,8 +29,8 @@ class ELSAFunctionCUDA(Function):
             ghost_mul = ghost_mul.float()
         if ghost_add.dtype == torch.float16:
             ghost_add = ghost_add.float()
-        if spatial_filter.dtype == torch.float16:
-            spatial_filter = spatial_filter.float()
+        if h_attn.dtype == torch.float16:
+            h_attn = h_attn.float()
 
         # check channel_filter size
         b, c, h, w = features.size()
@@ -45,21 +45,21 @@ class ELSAFunctionCUDA(Function):
             "ghost_mul size {} does not match kernel size {}".format(
                 ghost_mul.size(), kernel_size)
 
-        # check spatial_filter size
-        bs, cs, hs, ws, = spatial_filter.size()
+        # check h_attn size
+        bs, cs, hs, ws, = h_attn.size()
         assert bs == b and hs == h // stride and ws == w // stride,\
-            "spatial_filter size {} does not match feature size {} with stride {}".format(
-                spatial_filter.size(), features.size(), stride)
+            "h_attn size {} does not match feature size {} with stride {}".format(
+                h_attn.size(), features.size(), stride)
         assert cs == kernel_size ** 2,\
-            "spatial_filter size {} does not match kernel size {}".format(
-                spatial_filter.size(), kernel_size)
+            "h_attn size {} does not match kernel size {}".format(
+                h_attn.size(), kernel_size)
 
         assert (kernel_size - 1) % 2 == 0 and kernel_size >= 1 and dilation >= 1 and stride >= 1
 
         features = features.contiguous()
         ghost_mul = ghost_mul.contiguous()
         ghost_add = ghost_add.contiguous()
-        spatial_filter = spatial_filter.contiguous()
+        h_attn = h_attn.contiguous()
 
         # record important info
         ctx.kernel_size = kernel_size
@@ -79,11 +79,11 @@ class ELSAFunctionCUDA(Function):
         else:
             op_type = elsa_ext
 
-        op_type.forward(features, ghost_mul, ghost_add, spatial_filter,
+        op_type.forward(features, ghost_mul, ghost_add, h_attn,
                         kernel_size, dilation, stride, output)
         if features.requires_grad or ghost_mul.requires_grad \
-                or ghost_add.requires_grad or spatial_filter.requires_grad:
-            ctx.save_for_backward(features, ghost_mul, ghost_add, spatial_filter)
+                or ghost_add.requires_grad or h_attn.requires_grad:
+            ctx.save_for_backward(features, ghost_mul, ghost_add, h_attn)
         return output
 
     @staticmethod
@@ -100,31 +100,33 @@ class ELSAFunctionCUDA(Function):
         dilation = ctx.dilation
         stride = ctx.stride
 
-        features, ghost_mul, ghost_add, spatial_filter = ctx.saved_tensors
+        features, ghost_mul, ghost_add, h_attn = ctx.saved_tensors
         rgrad_output = torch.zeros_like(grad_output, requires_grad=False)
         rgrad_input = torch.zeros_like(features, requires_grad=False)
-        rgrad_spatial_filter = torch.zeros_like(spatial_filter, requires_grad=False)
+        rgrad_h_attn = torch.zeros_like(h_attn, requires_grad=False)
         grad_input = torch.zeros_like(features, requires_grad=False)
         grad_ghost_mul = torch.zeros_like(ghost_mul, requires_grad=False)
         grad_ghost_add = torch.zeros_like(ghost_add, requires_grad=False)
-        grad_spatial_filter = torch.zeros_like(spatial_filter, requires_grad=False)
+        grad_h_attn = torch.zeros_like(h_attn, requires_grad=False)
 
         # TODO: optimize backward CUDA code.
         elsa_ext.backward(grad_output, features, ghost_mul, ghost_add,
-                          spatial_filter, kernel_size, dilation, stride,
-                          rgrad_output, rgrad_input, rgrad_spatial_filter,
-                          grad_input, grad_ghost_mul, grad_ghost_add, grad_spatial_filter)
+                          h_attn, kernel_size, dilation, stride,
+                          rgrad_output, rgrad_input, rgrad_h_attn,
+                          grad_input, grad_ghost_mul, grad_ghost_add, grad_h_attn)
 
-        return grad_input, grad_ghost_mul, grad_ghost_add, grad_spatial_filter, None, None, None, None
+        return grad_input, grad_ghost_mul, grad_ghost_add, grad_h_attn, None, None, None, None
 
 
 elsa_function_cuda = ELSAFunctionCUDA.apply
 
 
-def elsa_op(features, ghost_mul, ghost_add, spatial_filter,
-            kernel_size=5, dilation=1, stride=1, version=''):
-    if features.is_cuda and ghost_mul.is_cuda and ghost_add.is_cuda and spatial_filter.is_cuda:
-        return elsa_function_cuda(features, ghost_mul, ghost_add, spatial_filter,
+def elsa_op(features, ghost_mul, ghost_add, h_attn, lam, gamma,
+            kernel_size=3, dilation=1, stride=1, version=''):
+    if features.is_cuda and ghost_mul.is_cuda and ghost_add.is_cuda and h_attn.is_cuda:
+        ghost_mul = ghost_mul ** lam
+        ghost_add = ghost_add * gamma
+        return elsa_funcgion_cuda(features, ghost_mul, ghost_add, h_attn,
                                   kernel_size, dilation, stride, version)
     else:
         B, C, H, W = features.shape
@@ -134,8 +136,8 @@ def elsa_op(features, ghost_mul, ghost_add, spatial_filter,
             .reshape(B, C, kernel_size ** 2, H * W)
         ghost_mul = ghost_mul.reshape(B, C, kernel_size ** 2, 1)
         ghost_add = ghost_add.reshape(B, C, kernel_size ** 2, 1)
-        spatial_filter = spatial_filter.reshape(B, 1, kernel_size ** 2, H * W)
-        filters = ghost_mul * spatial_filter + ghost_add  # B, C, K, N
+        h_attn = h_attn.reshape(B, 1, kernel_size ** 2, H * W)
+        filters = (ghost_mul ** lam) * h_attn + ghost_add * gamma # B, C, K, N
         return (features * filters).sum(2).reshape(B, C, H, W)
 
 
@@ -176,17 +178,17 @@ class ELSA(nn.Module):
             nn.Conv2d(self.dim_qk, kernel_size ** 2 * num_heads, 1, groups=groups))
 
         if self.lam != 0 and self.gamma != 0:
-            gh_mul = torch.randn(1, 1, self.dim_v, kernel_size, kernel_size)
-            gh_add = torch.zeros(1, 1, self.dim_v, kernel_size, kernel_size)
-            trunc_normal_(gh_add, std=.02)
-            self.ghost_head = nn.Parameter(torch.cat((gh_mul, gh_add), dim=0), requires_grad=True)
+            ghost_mul = torch.randn(1, 1, self.dim_v, kernel_size, kernel_size)
+            ghost_add = torch.zeros(1, 1, self.dim_v, kernel_size, kernel_size)
+            trunc_normal_(ghost_add, std=.02)
+            self.ghost_head = nn.Parameter(torch.cat((ghost_mul, ghost_add), dim=0), requires_grad=True)
         elif self.lam == 0 and self.gamma != 0:
-            gh_add = torch.zeros(1, self.dim_v, kernel_size, kernel_size)
-            trunc_normal_(gh_add, std=.02)
-            self.ghost_head = nn.Parameter(gh_add, requires_grad=True)
+            ghost_add = torch.zeros(1, self.dim_v, kernel_size, kernel_size)
+            trunc_normal_(ghost_add, std=.02)
+            self.ghost_head = nn.Parameter(ghost_add, requires_grad=True)
         elif self.lam != 0 and self.gamma == 0:
-            gh_mul = torch.randn(1, self.dim_v, kernel_size, kernel_size)
-            self.ghost_head = nn.Parameter(gh_mul, requires_grad=True)
+            ghost_mul = torch.randn(1, self.dim_v, kernel_size, kernel_size)
+            self.ghost_head = nn.Parameter(ghost_mul, requires_grad=True)
         else:
             self.ghost_head = None
 
@@ -204,33 +206,33 @@ class ELSA(nn.Module):
         qkv = self.pre_proj(x)
 
         q, k, v = torch.split(qkv, (self.dim_qk, self.dim_qk, self.dim_v), dim=1)
-        quadratic = q * k * self.scale
+        hadamard_product = q * k * self.scale
 
         if self.stride > 1:
-            quadratic = F.avg_pool2d(quadratic, self.stride)
+            hadamard_product = F.avg_pool2d(hadamard_product, self.stride)
 
-        attn = self.attn(quadratic)
+        h_attn = self.attn(hadamard_product)
 
         v = v.reshape(B * G, C // G, H, W)
-        attn = attn.reshape(B * G, -1, H, W).softmax(1)
-        attn = self.attn_drop(attn)
+        h_attn = h_attn.reshape(B * G, -1, H, W).softmax(1)
+        h_attn = self.attn_drop(h_attn)
         if self.lam != 0 and self.gamma != 0:
             gh = self.ghost_head.expand(2, B, C, ks, ks).reshape(2, B * G, C // G, ks, ks)
-            gh_mul, gh_add = gh[0] ** self.lam, gh[1] * self.gamma
+            ghost_mul, ghost_add = gh[0], gh[1]
         elif self.lam == 0 and self.gamma != 0:
-            gh_mul = torch.ones(B * G, C // G, ks, ks,
+            ghost_mul = torch.ones(B * G, C // G, ks, ks,
                                 device=v.device, requires_grad=False)
-            gh_add = self.ghost_head.expand(B, C, ks, ks).reshape(B * G, C // G, ks, ks) * self.gamma
+            ghost_add = self.ghost_head.expand(B, C, ks, ks).reshape(B * G, C // G, ks, ks)
         elif self.lam != 0 and self.gamma == 0:
-            gh_mul = self.ghost_head.expand(B, C, ks, ks).reshape(B * G, C // G, ks, ks) ** self.lam
-            gh_add = torch.zeros(B * G, C // G, ks, ks,
+            ghost_mul = self.ghost_head.expand(B, C, ks, ks).reshape(B * G, C // G, ks, ks)
+            ghost_add = torch.zeros(B * G, C // G, ks, ks,
                                  device=v.device, requires_grad=False)
         else:
-            gh_mul = torch.ones(B * G, C // G, ks, ks,
+            ghost_mul = torch.ones(B * G, C // G, ks, ks,
                                 device=v.device, requires_grad=False)
-            gh_add = torch.zeros(B * G, C // G, ks, ks,
+            ghost_add = torch.zeros(B * G, C // G, ks, ks,
                                  device=v.device, requires_grad=False)
-        x = elsa_op(v, gh_mul, gh_add, attn, self.kernel_size, self.dilation, self.stride)
+        x = elsa_op(v, ghost_mul, ghost_add, h_attn, self.lam, self.gamma, self.kernel_size, self.dilation, self.stride)
         x = x.reshape(B, C, H // self.stride, W // self.stride)
         x = self.post_proj(x.permute(0, 2, 3, 1))  # B, H, W, C
         x = self.proj_drop(x)
