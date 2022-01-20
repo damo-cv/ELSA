@@ -124,9 +124,9 @@ elsa_function_cuda = ELSAFunctionCUDA.apply
 def elsa_op(features, ghost_mul, ghost_add, h_attn, lam, gamma,
             kernel_size=3, dilation=1, stride=1, version=''):
     if features.is_cuda and ghost_mul.is_cuda and ghost_add.is_cuda and h_attn.is_cuda:
-        ghost_mul = ghost_mul ** lam
-        ghost_add = ghost_add * gamma
-        return elsa_funcgion_cuda(features, ghost_mul, ghost_add, h_attn,
+        ghost_mul = ghost_mul ** lam if lam != 0 else ghost_mul
+        ghost_add = ghost_add * gamma if gamma != 0 else ghost_add
+        return elsa_function_cuda(features, ghost_mul, ghost_add, h_attn,
                                   kernel_size, dilation, stride, version)
     else:
         B, C, H, W = features.shape
