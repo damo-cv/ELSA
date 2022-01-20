@@ -122,10 +122,17 @@ elsa_function_cuda = ELSAFunctionCUDA.apply
 
 
 def elsa_op(features, ghost_mul, ghost_add, h_attn, lam, gamma,
-            kernel_size=3, dilation=1, stride=1, version=''):
+            kernel_size=5, dilation=1, stride=1, version=''):
+
+    # lambda and gamma
+    _B, _C = features.shape[:2]
+    ks = kernel_size
+    ghost_mul = ghost_mul ** lam if lam != 0 \
+        else torch.ones(_B, _C, ks, ks, device=features.device, requires_grad=False)
+    ghost_add = ghost_add * gamma if gamma != 0 \
+        else torch.zeros(_B, _C, ks, ks, device=features.device, requires_grad=False)
+
     if features.is_cuda and ghost_mul.is_cuda and ghost_add.is_cuda and h_attn.is_cuda:
-        ghost_mul = ghost_mul ** lam if lam != 0 else ghost_mul
-        ghost_add = ghost_add * gamma if gamma != 0 else ghost_add
         return elsa_function_cuda(features, ghost_mul, ghost_add, h_attn,
                                   kernel_size, dilation, stride, version)
     else:
@@ -137,7 +144,7 @@ def elsa_op(features, ghost_mul, ghost_add, h_attn, lam, gamma,
         ghost_mul = ghost_mul.reshape(B, C, kernel_size ** 2, 1)
         ghost_add = ghost_add.reshape(B, C, kernel_size ** 2, 1)
         h_attn = h_attn.reshape(B, 1, kernel_size ** 2, H * W)
-        filters = (ghost_mul ** lam) * h_attn + ghost_add * gamma # B, C, K, N
+        filters = ghost_mul * h_attn + ghost_add  # B, C, K, N
         return (features * filters).sum(2).reshape(B, C, H, W)
 
 
@@ -216,23 +223,19 @@ class ELSA(nn.Module):
         v = v.reshape(B * G, C // G, H, W)
         h_attn = h_attn.reshape(B * G, -1, H, W).softmax(1)
         h_attn = self.attn_drop(h_attn)
+
+        ghost_mul = None
+        ghost_add = None
         if self.lam != 0 and self.gamma != 0:
             gh = self.ghost_head.expand(2, B, C, ks, ks).reshape(2, B * G, C // G, ks, ks)
             ghost_mul, ghost_add = gh[0], gh[1]
         elif self.lam == 0 and self.gamma != 0:
-            ghost_mul = torch.ones(B * G, C // G, ks, ks,
-                                device=v.device, requires_grad=False)
             ghost_add = self.ghost_head.expand(B, C, ks, ks).reshape(B * G, C // G, ks, ks)
         elif self.lam != 0 and self.gamma == 0:
             ghost_mul = self.ghost_head.expand(B, C, ks, ks).reshape(B * G, C // G, ks, ks)
-            ghost_add = torch.zeros(B * G, C // G, ks, ks,
-                                 device=v.device, requires_grad=False)
-        else:
-            ghost_mul = torch.ones(B * G, C // G, ks, ks,
-                                device=v.device, requires_grad=False)
-            ghost_add = torch.zeros(B * G, C // G, ks, ks,
-                                 device=v.device, requires_grad=False)
-        x = elsa_op(v, ghost_mul, ghost_add, h_attn, self.lam, self.gamma, self.kernel_size, self.dilation, self.stride)
+
+        x = elsa_op(v, ghost_mul, ghost_add, h_attn, self.lam, self.gamma,
+                    self.kernel_size, self.dilation, self.stride)
         x = x.reshape(B, C, H // self.stride, W // self.stride)
         x = self.post_proj(x.permute(0, 2, 3, 1))  # B, H, W, C
         x = self.proj_drop(x)
