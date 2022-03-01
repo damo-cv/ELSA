@@ -36,7 +36,7 @@ Please refer to our [paper](https://arxiv.org/abs/2112.12786) for more details.
 
 | Model       | #Params |   Pretrain  | Resolution | Top1 Acc | Download | 
 | :---        |  :---:  |    :---:    |    :---:   |   :---:  |  :---:   |
-| ELSA-Swin-T | 28M     | ImageNet 1K |     224    | 82.7     | [google](https://drive.google.com/file/d/1eM0FsRNEDX-NncIEfvl4yXOAJawy2Ls0/view?usp=sharing) / [baidu](https://pan.baidu.com/s/16lPWTybCeoHT4BMDaKDTYw?pwd=cw25) |
+| ELSA-Swin-T | 29M     | ImageNet 1K |     224    | 82.7     | [google](https://drive.google.com/file/d/1eM0FsRNEDX-NncIEfvl4yXOAJawy2Ls0/view?usp=sharing) / [baidu](https://pan.baidu.com/s/16lPWTybCeoHT4BMDaKDTYw?pwd=cw25) |
 | ELSA-Swin-S | 53M     | ImageNet 1K |     224    | 83.5     | [google](https://drive.google.com/file/d/186PDbqrt2hEg8r5aH45D5D6bO-EWJgcO/view?usp=sharing) / [baidu](https://pan.baidu.com/s/1qTyCm7vLXqd9KEMyIsKLrQ?pwd=e6b2) |
 | ELSA-Swin-B | 93M     | ImageNet 1K |     224    | 84.0     | [google](https://drive.google.com/file/d/1J42asBqLb6iiKaYQaeoS2UpT7kUSjBr9/view?usp=sharing) / [baidu](https://pan.baidu.com/s/11V_IdRXXPo4IaqghUdLNCQ?pwd=3r11) |
 
