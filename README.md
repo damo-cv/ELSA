@@ -5,7 +5,7 @@ By [Jingkai Zhou](http://thefoxofsky.github.io/), [Pichao Wang](https://wangpich
 
 This repo is the official implementation of ["ELSA: Enhanced Local Self-Attention for Vision Transformer"](https://arxiv.org/abs/2112.12786).
 
-**A FAST VERSION OF ELSA-SWIN COMING SOON!!**
+**A FAST VERSION OF ELSA-SWIN IS COMING SOON!!!**
 
 ## Introduction
 
