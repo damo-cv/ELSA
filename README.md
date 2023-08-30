@@ -258,4 +258,13 @@ Codebase from [pytorch-image-models](https://github.com/rwightman/pytorch-image-
   journal={arXiv preprint arXiv:2112.12786},
   year={2021}
 }
+
+@article{zhou2023limits,
+  title={What Limits the Performance of Local Self-attention?},
+  author={Zhou, Jingkai and Wang, Pichao and Tang, Jiasheng and Wang, Fan and Liu, Qiong and Li, Hao and Jin, Rong},
+  journal={International Journal of Computer Vision},
+  pages={1--13},
+  year={2023},
+  publisher={Springer}
+}
 ```
